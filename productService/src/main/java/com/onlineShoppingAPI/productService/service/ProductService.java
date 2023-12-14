@@ -1,10 +1,13 @@
 package com.onlineShoppingAPI.productService.service;
 
 import com.onlineShoppingAPI.productService.dto.ProductRequest;
+import com.onlineShoppingAPI.productService.dto.ProductResponse;
 import com.onlineShoppingAPI.productService.model.Product;
 import com.onlineShoppingAPI.productService.repositiry.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 //for logging info - lombok
@@ -26,5 +29,17 @@ public class ProductService {
 
         productRepository.save(product);
         log.info("product " + product.getId() + " is created");
+    }
+
+    public List<ProductResponse> getAllProducts(){
+        List<Product> products = productRepository.findAll();
+        return products.stream().map(product -> {
+            return ProductResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .description(product.getDescription())
+                    .price(product.getPrice())
+                    .build();
+        }).toList();
     }
 }
