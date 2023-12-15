@@ -1,11 +1,12 @@
 package com.onlineShoppingAPI.inventoryService.controller;
 
+import com.onlineShoppingAPI.inventoryService.dto.InventoryResponse;
 import com.onlineShoppingAPI.inventoryService.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
@@ -18,8 +19,9 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping("/{code}")
-    public boolean inStock(@PathVariable("code") String code){
-       return inventoryService.inStock(code);
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public List<InventoryResponse> inStock(@RequestParam List<String> codes){
+        return inventoryService.inStock(codes);
     }
 }

@@ -6,6 +6,7 @@ import com.onlineShoppingAPI.productService.model.Product;
 import com.onlineShoppingAPI.productService.repositiry.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    @Transactional
     public void createProduct(ProductRequest productRequest){
         Product product = Product.builder()
                 .name(productRequest.getName())
@@ -31,6 +33,7 @@ public class ProductService {
         log.info("product " + product.getId() + " is created");
     }
 
+    @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts(){
         List<Product> products = productRepository.findAll();
         return products.stream().map(product -> {
