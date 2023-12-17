@@ -19,12 +19,12 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, WebClient webClient){
+    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder){
         this.orderRepository = orderRepository;
-        this.webClient = webClient;
+        this.webClientBuilder = webClientBuilder;
     }
 
     @Transactional
@@ -46,8 +46,8 @@ public class OrderService {
         List<String> itemCodes = order.getItems().stream().map(item -> item.getItemCode()).toList();
 
         //inter process communication with other service - inventory service
-        InventoryResponse[] inventoryItems = webClient.get()
-                .uri("http://localhost:8082/api/inventory",
+        InventoryResponse[] inventoryItems = webClientBuilder.build().get()
+                .uri("http://inventoryService/api/inventory",
                         uriBuilder -> uriBuilder.queryParam("codes", itemCodes).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
