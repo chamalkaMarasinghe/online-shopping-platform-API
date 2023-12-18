@@ -23,7 +23,7 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
         return serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange -> exchange.pathMatchers("/api/orders")
+                .authorizeExchange(exchange -> exchange.pathMatchers("/api/public/**")
                         .permitAll()
                         .anyExchange().authenticated()
                 ).oauth2ResourceServer((oauth) -> oauth
