@@ -25,6 +25,6 @@ public class OrderController {
     }
 
     public String fallbackMethodOfCreateOrder(OrderRequest orderRequest, RuntimeException runtimeException){
-        return "Place order within sometime later: Error occurred!";
+        return runtimeException.getMessage();
     }
 }

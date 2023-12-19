@@ -1,11 +1,15 @@
 package com.onlineShoppingAPI.orderService.service;
 
+
 import com.onlineShoppingAPI.orderService.dto.InventoryResponse;
 import com.onlineShoppingAPI.orderService.dto.OrderRequest;
+import com.onlineShoppingAPI.orderService.event.OrderPlacedEvent;
 import com.onlineShoppingAPI.orderService.model.Item;
 import com.onlineShoppingAPI.orderService.model.Order;
 import com.onlineShoppingAPI.orderService.repository.OrderRepository;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -20,11 +25,14 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+    private final Random random = new Random();
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder){
+    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder, KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate){
         this.orderRepository = orderRepository;
         this.webClientBuilder = webClientBuilder;
+        this.kafkaTemplate  =kafkaTemplate;
     }
 
     @Transactional
@@ -32,6 +40,8 @@ public class OrderService {
     //communicate with inventory service
     public void createOrder(OrderRequest orderRequest){
         Order order = new Order();
+        String orderName = "myFakeOrderName" + random.nextInt();
+        order.setOrderName(orderName);
         List<Item> items = orderRequest.getItems().stream().map(itemDto -> {
                 Item item = new Item();
                 item.setId(itemDto.getId());
@@ -57,6 +67,7 @@ public class OrderService {
 
         if(isAllItemsAvailable){
             orderRepository.save(order);
+            kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(orderName));
         }else {
             throw new IllegalArgumentException("There are some out of stock items!");
         }
