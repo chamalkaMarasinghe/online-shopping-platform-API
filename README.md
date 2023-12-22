@@ -22,6 +22,6 @@
 * Service discovery is facilitated by a Eureka server. This allows services to dynamically discover and communicate with each other, enhancing the scalability and flexibility of the microservices architecture.
 
 ## System overview diagram
-![]()
+![](https://github.com/chamalkaMarasinghe/online-shopping-platform-API/blob/main/system%20overview.png)
 
 In summary, the backend API of this online shopping platform is a sophisticated system leveraging modern technologies. It adopts microservices architecture for scalability and maintainability, communicates synchronously and asynchronously between services, employs MongoDB for data storage, and incorporates centralized authentication and service discovery mechanisms for security and efficient communication.
